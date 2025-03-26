@@ -6,6 +6,14 @@ app = Flask(__name__, template_folder="template")
     
 @app.route("/home",methods=['get','post'])
 def home():
+
+    
+    url = "https://notify-api.line.me/api/notify"
+    headers = {
+        'Content-Type' : "application/x-www-form-urlencoded",
+        'Authorization' : "Bearer 7lVpHVzPrquKZ3M4aucCt7SBuXj5tMfw8oWuQSqQTWx"
+                }
+
     # ประกาศให้เป็น str
     order_text = ""
     stock_text = ""
@@ -37,22 +45,18 @@ def home():
         query = "SELECT * FROM tbStock"
         result_stock = Execute_data(query)
         stock_text = result_stock
-        # print (select_value)
 
         query = "SELECT * FROM tbCustomerGrp"
         result_customergrp = Execute_data(query)
         customergrp_text = result_customergrp
-        # print (customergrp_text)
 
         query = "select * from tb_Order"
         result_order = Execute_data(query)
         order_text = result_order
-        # print(order_text)
 
         query = "SELECT * FROM tbStockGrp"
         result_stockgrp = Execute_data(query)
         stockgrp_text = result_stockgrp
-        # print("result_stock",result_stockgrp)
 
         if 'button_search' in request.form:
             select_value = request.form.get('customer')
@@ -61,9 +65,9 @@ def home():
             if select_value is not None:
                 print("select_value if")
 
-                for row in customer_text: # ประกาศ row ใน customer_text และให้ลูปวนตามข้อมูลที่มี
+                for row in customer_text:
                     print( "for in  row" ,row[0])
-                    if row[0] == select_value: # เปรียบเทียบว่าตัว select_value มันเท่ากับ ข้อมูลอันที่ 0 ของแถวแต่ละแถวในcustomer_text
+                    if row[0] == select_value:
                         row[1]
                         print("row 1 ",row[1])
                         customergrpcode = row[1]
@@ -107,15 +111,6 @@ def home():
                          Stock_name = stock_result[0][4]
                     query = f"INSERT INTO tb_Order (CustCode ,StockCode, StockGrpCode,states) VALUES ('{select_value}','{select_stock}','{stockgrp_code}','1')"
                     print("insert :",Execute_data_insert(query))
-
-
-        
-            
-            url = "https://notify-api.line.me/api/notify"
-            headers = {
-                'Content-Type' : "application/x-www-form-urlencoded",
-                'Authorization' : "Bearer 7lVpHVzPrquKZ3M4aucCt7SBuXj5tMfw8oWuQSqQTWx"
-            }
 
             message_text = {
                      f"ข้อมูลการสั่งซื้อสินค้า\n"
@@ -167,27 +162,79 @@ def home():
                 customer_name = request.form.get("customer")  # รับค่าชื่อจากดรอปดาวน์
                 product_name = request.form.get("stock")  # รับค่าสินค้าจากดรอปดาวน์
 
+                olddata = Execute_data(f"select CustCode,StockCode from tb_Order where SoCode = '{button_edit}'")
+                if olddata:
+                    oldCustCode,oldStockCode = olddata[0]
+                    customer_result = Execute_data(f"select *from tbCustomer where CustCode = '{oldCustCode}'")
+                    if customer_result:
+                        customer_old_numname = customer_result[0][2]
+                        customer_old_na = customer_result[0][3]
+                        customer_old_tell = customer_result[0][5]
+                        customergrp_old_code = customer_result[0][1]
+
+                        customergrp_result = Execute_data(f"select *from tbCustomerGrp where CustGrpCode = '{customergrp_old_code}'")
+                    if customergrp_result:
+                        customer_old_namegrp = customergrp_result[0][1]
+                    Stock_result = Execute_data(f"select *from tbStock where StockCode = '{oldStockCode}'")
+                    if Stock_result:
+                         Stock_old = Stock_result[0][4]
+
+                
+
                 print("แก้ไข SoCode:", button_edit)
                 print("อัปเดตชื่อลูกค้าเป็น:", customer_name)
                 print("อัปเดตสินค้าเป็น:", product_name)
 
-                # ใช้ Parameterized Query ป้องกัน SQL Injection
                 for row in stock_text: # ประกาศ row ใน customer_text และให้ลูปวนตามข้อมูลที่มี
                     if row[0] == product_name: # เปรียบเทียบว่าตัว select_value มันเท่ากับ ข้อมูลอันที่ 0 ของแถวแต่ละแถวในcustomer_text
                         row[1]
-                        print("row 1 ",row[1])
                         stockgrp_code = row[1]
+                        print("row 1 ", row[1])
+    
+
 
                 query = f"update tb_Order set CustCode = '{customer_name}',StockCode = '{product_name}',StockGrpCode = '{stockgrp_code}' where SoCode = '{button_edit}'"
                 print("insert :",Execute_data_insert(query))
                 print("อัปเดตข้อมูลสำเร็จ")
+                
+                customer_result = Execute_data(f"select *from tbCustomer where CustCode = '{customer_name}'")
+                if customer_result:
+                    customer_numname = customer_result[0][2]
+                    customer_na = customer_result[0][3]
+                    customer_tell = customer_result[0][5]
+                    customergrp_code = customer_result[0][1]
+
+                customergrp_result = Execute_data(f"select *from tbCustomerGrp where CustGrpCode = '{customergrp_code}'")
+                if customergrp_result:
+                    customer_namegrp = customergrp_result[0][1]
+                stock_result = Execute_data(f"select *from tbStock where StockCode = '{product_name}'")
+                if stock_result:
+                    Stock_name = stock_result[0][4]
+
+                message_text = {
+                        f"ข้อมูลการสั่งซื้อสินค้าของลูกค้าเก่า\n"
+                        f"ชื่อลูกค้า {customer_old_numname} {customer_old_na}\n"
+                        f"เบอร์ลูกค้า {customer_old_tell}\n"
+                        f"ประเภทลูกค้า {customer_old_namegrp}\n"
+                        f"สินค้า {Stock_old}\nมีการแก้ไขข้อมูล\n---------------"
+                         f"ข้อมูลการสั่งซื้อสินค้า\n"
+                        f"ชื่อลูกค้า {customer_numname} {customer_na}\n"
+                        f"เบอร์ลูกค้า {customer_tell}\n"
+                        f"ประเภทลูกค้า {customer_namegrp}\n"
+                        f"สินค้า {Stock_name}\n"
+                    }
+                
+                message = {"message": message_text}
+                
+                res = requests.post(url=url, headers=headers, data=message)
+
                 return redirect(url_for("home"))
 
 
         elif 'button_delete' in request.form:
             selected_socode = request.form.get("button_delete")
             print ("ลบ", button_delete)
-            query = "DELETE tb_Order WHERE SoCode = " + selected_socode
+            query = "update tb_Order set states='0' WHERE SoCode = " + selected_socode
             Execute_data_insert(query)
             return redirect(url_for("home"))
         
