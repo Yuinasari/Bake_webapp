@@ -102,8 +102,12 @@ def home():
                  if select_stock == row[0]:
                     stockgrp_code = row[1]
                     print(stockgrp_code)
+                    stock_result = Execute_data(f"select *from tbStock where StockCode = '{select_stock}'")
+                    if stock_result:
+                         Stock_name = stock_result[0][4]
                     query = f"INSERT INTO tb_Order (CustCode ,StockCode, StockGrpCode,states) VALUES ('{select_value}','{select_stock}','{stockgrp_code}','1')"
                     print("insert :",Execute_data_insert(query))
+
 
         
             
@@ -118,6 +122,7 @@ def home():
                      f"ชื่อลูกค้า {customer_numname} {customer_na}\n"
                      f"เบอร์ลูกค้า {customer_tell}\n"
                      f"ประเภทลูกค้า {customer_namegrp}\n"
+                     f"สินค้า {Stock_name}\n"
                 }
             
             message = {"message": message_text}
