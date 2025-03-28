@@ -21,6 +21,7 @@ def home():
     stockgrp_code = None
     customer_text = ""
     customergrp_text = ""
+    customergrp_code = ""
     select_value = None
     select_stock = None
     select_edit = None
@@ -112,15 +113,57 @@ def home():
                     query = f"INSERT INTO tb_Order (CustCode ,StockCode, StockGrpCode,states) VALUES ('{select_value}','{select_stock}','{stockgrp_code}','1')"
                     print("insert :",Execute_data_insert(query))
 
-            message_text = {
-                     f"ข้อมูลการสั่งซื้อสินค้า\n"
-                     f"ชื่อลูกค้า {customer_numname} {customer_na}\n"
-                     f"เบอร์ลูกค้า {customer_tell}\n"
-                     f"ประเภทลูกค้า {customer_namegrp}\n"
-                     f"สินค้า {Stock_name}\n"
+                    if Stock_name == "แป้งมันสำปะหลัง":
+                        imag_url = "https://inwfile.com/s-cm/07qaf1.jpg" #1
+                    elif Stock_name == "แป้งข้าวจ้าว":
+                        imag_url = "https://inwfile.com/s-cm/edb25s.jpg" #2
+                    elif Stock_name == "แป้งอเนกประสงค์":
+                        imag_url = "https://inwfile.com/s-cm/sdsvse.jpg" #3
+                    elif Stock_name == "แป้งสาลี":
+                        imag_url = "https://image.makewebcdn.com/makeweb/m_1920x0/LnLGuwlBA/DefaultData/%E0%B9%81%E0%B8%9B%E0%B9%89%E0%B8%87%E0%B9%80%E0%B8%8A%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%A3%E0%B8%B5%E0%B9%88%E0%B8%9F%E0%B9%89%E0%B8%B2_1_%E0%B8%81%E0%B8%B4%E0%B9%82%E0%B8%A5%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1.jpg" #4
+                    elif Stock_name == "แป้งลิสง":
+                        imag_url = "https://www.bulksupplements.com/cdn/shop/files/Peanut-Flour-Protein-Powder-1kg_f095e8ba-0284-4cca-aaa7-36dd0fe69ada.jpg?v=1698082069" #5
+                    elif Stock_name == "นมข้นหวาน":
+                        imag_url = "https://inwfile.com/s-fi/9suz3v.jpg" #6
+                    elif Stock_name == "นมข้นจืด":
+                        imag_url = "https://inwfile.com/s-cm/0k0hp0.jpg" #7
+                    elif Stock_name == "นมโอ๊ต":
+                        imag_url = "https://oatside.com/wp-content/uploads/2021/09/OAT_Pkg_Web_Barista.jpg" #8
+                    elif Stock_name == "นมสด":
+                        imag_url = "https://cdn8.devgodigit.net/wp-content/uploads/2021/09/30183501/001844466_P.jpg" #9
+                    elif Stock_name == "วานิลา":
+                        imag_url = "https://sordaotieam.com/cdn/shop/products/sd00091.jpg?v=1624442197" #10
+                    elif Stock_name == "บลูฮาวาย":
+                        imag_url = "https://m.media-amazon.com/images/I/61kBXnxgC8L._AC_UF1000,1000_QL80_.jpg" #11
+                    elif Stock_name == "สตอเบอรรี่":
+                        imag_url = "https://www.1883.com/app/uploads/2021/05/sirop_fraise-1883_ps-1.jpg" #12
+                    elif Stock_name == "คาราเมล":
+                        imag_url = "https://www.caffacoffeemaker.com/wp-content/uploads/2023/12/%E0%B8%AA%E0%B8%B4%E0%B8%99%E0%B8%84%E0%B9%89%E0%B8%B2-108-scaled.jpg" #13
+                    elif Stock_name == "กุหลาบ":
+                        imag_url = "https://www.1883.com/app/uploads/2021/05/sirop_rose-1883_ps.jpg" #14
+                    elif Stock_name == "มะพร้าว	":
+                        imag_url = "https://www.1883.com/app/uploads/2021/05/sirop_noix-de-coco-1883_ps.jpg" #15
+                    elif Stock_name == "แอปเปิ้ลเขียว":
+                        imag_url = "https://www.1883.com/app/uploads/2021/05/sirop_pomme-verte-1883_ps.jpg" #16
+                    elif Stock_name == "ลิ้นจี้":
+                        imag_url = "https://www.1883.com/app/uploads/2021/05/sirop_litchi-1883_ps.jpg" #17
+
+                    message_text = {
+                    f">> รายการการสั่งซื้อสินค้า ร้าน BakeCraft Supplies <<\n\n"
+                    f"🛒 ข้อมูลการสั่งซื้อสินค้า\n"
+                    f"👤 ชื่อลูกค้า: {customer_numname} {customer_na}\n"
+                    f"📞 เบอร์ลูกค้า: {customer_tell}\n"
+                    f"🏷️ ประเภทลูกค้า: {customer_namegrp}\n"
+                    f"📦 สินค้า: {Stock_name}\n"
                 }
-            
-            message = {"message": message_text}
+                    if imag_url :
+                        message = {
+                            "message": message_text,
+                            "imageThumbnail" : imag_url,
+                            "imageFullsize" : imag_url
+                        }
+                    else :
+                         message = {"message": message_text}
             
             res = requests.post(url=url, headers=headers, data=message)
 
@@ -212,17 +255,20 @@ def home():
                     Stock_name = stock_result[0][4]
 
                 message_text = {
-                        f"ข้อมูลการสั่งซื้อสินค้าของลูกค้าเก่า\n"
-                        f"ชื่อลูกค้า {customer_old_numname} {customer_old_na}\n"
-                        f"เบอร์ลูกค้า {customer_old_tell}\n"
-                        f"ประเภทลูกค้า {customer_old_namegrp}\n"
-                        f"สินค้า {Stock_old}\nมีการแก้ไขข้อมูล\n---------------"
-                         f"ข้อมูลการสั่งซื้อสินค้า\n"
-                        f"ชื่อลูกค้า {customer_numname} {customer_na}\n"
-                        f"เบอร์ลูกค้า {customer_tell}\n"
-                        f"ประเภทลูกค้า {customer_namegrp}\n"
-                        f"สินค้า {Stock_name}\n"
-                    }
+                f">> รายการการสั่งซื้อสินค้า ร้าน BakeCraft Supplies <<\n\n"
+                f"⚠️ มีการแก้ไขข้อมูล\n\n"
+                f"🛒 ข้อมูลการสั่งซื้อสินค้าของลูกค้าเก่า\n"
+                f"👤 ชื่อลูกค้า: {customer_old_numname} {customer_old_na}\n"
+                f"📞 เบอร์ลูกค้า: {customer_old_tell}\n"
+                f"🏷️ ประเภทลูกค้า: {customer_old_namegrp}\n"
+                f"📦 สินค้า: {Stock_old}\n"
+                f"-----------------------------------\n"
+                f"🛒 ข้อมูลการสั่งซื้อสินค้าของลูกค้าใหม่\n"
+                f"👤 ชื่อลูกค้า: {customer_numname} {customer_na}\n"
+                f"📞 เบอร์ลูกค้า: {customer_tell}\n"
+                f"🏷️ ประเภทลูกค้า: {customer_namegrp}\n"
+                f"📦 สินค้า: {Stock_name}\n"
+                 }
                 
                 message = {"message": message_text}
                 
@@ -236,6 +282,37 @@ def home():
             print ("ลบ", button_delete)
             query = "update tb_Order set states='0' WHERE SoCode = " + selected_socode
             Execute_data_insert(query)
+            customer_name = request.form.get("customer")  # รับค่าชื่อจากดรอปดาวน์
+            product_name = request.form.get("stock")  # รับค่าสินค้าจากดรอปดาวน์
+
+            customer_result = Execute_data(f"select *from tbCustomer where CustCode = '{customer_name}'")
+            if customer_result:
+                 customer_numname = customer_result[0][2]
+                 customer_na = customer_result[0][3]
+                 customer_tell = customer_result[0][5]
+                 customergrp_code = customer_result[0][1]
+
+            customergrp_result = Execute_data(f"select *from tbCustomerGrp where CustGrpCode = '{customergrp_code}'")
+            if customergrp_result:
+                 customer_namegrp = customergrp_result[0][1]
+
+            stock_result = Execute_data(f"select *from tbStock where StockCode = '{product_name}'")
+            if stock_result:
+                Stock_name = stock_result[0][4]
+            
+            message_text = {
+                    f">> รายการการสั่งซื้อสินค้า ร้าน BakeCraft Supplies <<\n\n"
+                    f"⚠️ มีการยกเลิกรายการ\n\n"
+                    f"🛒 ข้อมูลการสั่งซื้อสินค้า\n"
+                    f"👤 ชื่อลูกค้า: {customer_numname} {customer_na}\n"
+                    f"📞 เบอร์ลูกค้า: {customer_tell}\n"
+                    f"🏷️ ประเภทลูกค้า: {customer_namegrp}\n"
+                    f"📦 สินค้า: {Stock_name}\n"
+                }
+
+            message = {"message": message_text}
+            
+            res = requests.post(url=url, headers=headers, data=message)
             return redirect(url_for("home"))
         
         
